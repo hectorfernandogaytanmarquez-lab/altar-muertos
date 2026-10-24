@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Altar de Muertos AR - Video</title>
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+    <script>
+      AFRAME.registerComponent('control-video', {
+        init: function () {
+          const marcador = this.el;
+          const video = document.querySelector('#video-ofrenda');
+
+          marcador.addEventListener('markerFound', function () {
+            video.play();
+          });
+
+          marcador.addEventListener('markerLost', function () {
+            video.pause();
+          });
+        }
+      });
+    </script>
+  </head>
+
+  <body style="margin: 0; overflow: hidden;">
+    <div class="ui-container">
+      <a href="./index.html" class="btn-ar">⬅ Volver al Altar 3D</a>
+      <button id="btn-audio" class="btn-ar">🔊 Activar Audio</button>
+    </div>
+
+    <a-scene
+      vr-mode-ui="enabled: false;"
+      renderer="logarithmicDepthBuffer: true;"
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+
+      <a-assets>
+        <video
+          id="video-ofrenda"
+          src="./assets/video-altar.mp4"
+          preload="auto"
+          loop="true"
+          crossorigin="anonymous"
+          playsinline
+          webkit-playsinline
+          muted>
+        </video>
+      </a-assets>
+
+      <!-- Nota: Si estás en XAMPP, asegúrate de que 'url' apunte a la ruta raíz correcta -->
+      <a-nft
+        control-video
+        type="nft"
+        url="/altar-muertos/assets/nft/altar-base"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance="0.01"
+        smoothThreshold="5">
+
+        <a-video
+          src="#video-ofrenda"
+          width="160"
+          height="90"
+          position="80 0 -100"
+          rotation="-90 0 0">
+        </a-video>
+
+      </a-nft>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      const btnAudio = document.getElementById('btn-audio');
+      const videoEl = document.getElementById('video-ofrenda');
+
+      btnAudio.addEventListener('click', () => {
+        videoEl.muted = !videoEl.muted;
+        videoEl.play();
+        btnAudio.textContent = videoEl.muted ? '🔊 Activar Audio' : '🔇 Silenciar';
+      });
+    </script>
+  </body>
+</html>
