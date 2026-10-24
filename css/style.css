@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.ui-container {
+  position: fixed;
+  bottom: 25px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  z-index: 9999; /* Obligatorio para quedar encima de la cámara AR */
+  pointer-events: none;
+}
+
+.btn-ar {
+  pointer-events: auto;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  color: white;
+  text-decoration: none;
+  padding: 14px 24px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 16px;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.btn-ar:active {
+  transform: scale(0.95);
+}
