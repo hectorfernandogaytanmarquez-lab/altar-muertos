@@ -1,80 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>Altar de Muertos AR - Video</title>
-    <link rel="stylesheet" href="./css/style.css" />
 
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <!-- A-Frame y AR.js para Patrones -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
 
     <script>
-      AFRAME.registerComponent('control-video', {
-        init: function () {
-          const marcador = this.el;
-          const video = document.querySelector('#video-ofrenda');
+        // Componente para controlar reproducción y pausa automática del video
+        AFRAME.registerComponent('videohandler', {
+            init: function () {
+                var marker = this.el;
+                this.vid = document.querySelector("#video-altar");
 
-          marcador.addEventListener('markerFound', function () {
-            video.play();
-          });
+                marker.addEventListener('markerFound', function () {
+                    if (this.vid) {
+                        this.vid.play();
+                    }
+                }.bind(this));
 
-          marcador.addEventListener('markerLost', function () {
-            video.pause();
-          });
-        }
-      });
+                marker.addEventListener('markerLost', function() {
+                    if (this.vid) {
+                        this.vid.pause();
+                        this.vid.currentTime = 0;
+                    }
+                }.bind(this));
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            var startBtn = document.querySelector('#start-btn');
+            var overlay = document.querySelector('#start-overlay');
+            var vid = document.querySelector('#video-altar');
+
+            startBtn.addEventListener('click', function () {
+                if (vid) {
+                    vid.muted = false; // Habilita el audio del video
+                    vid.play().then(function() {
+                        vid.pause();
+                        vid.currentTime = 0;
+                    }).catch(function(err) {
+                        console.log("Error al activar audio:", err);
+                    });
+                }
+                overlay.style.display = 'none'; // Oculta la pantalla de inicio
+            });
+        });
     </script>
-  </head>
 
-  <body style="margin: 0; overflow: hidden;">
-    <div class="ui-container">
-      <a href="./index.html" class="btn-ar">⬅ Volver al Altar 3D</a>
-      <button id="btn-audio" class="btn-ar">🔊 Activar Audio</button>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #start-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88); z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; color: #FFFFFF; font-family: sans-serif;
+        }
+        .ar-btn {
+            padding: 14px 28px; font-size: 1rem; font-weight: bold; background-color: #ff6a00; color: #FFF;
+            border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
+        }
+        .ar-instruction {
+            position: absolute; top: 10px; width: 100%; text-align: center; color: #FFFFFF;
+            font-family: sans-serif; font-size: 14px; background: rgba(0, 0, 0, 0.6); padding: 8px 0; z-index: 999; pointer-events: none;
+        }
+        .ui-container {
+            position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 9999;
+        }
+        .btn-ar {
+            background: linear-gradient(135deg, #ff6a00, #ee0979); color: white; text-decoration: none;
+            padding: 12px 24px; border-radius: 30px; font-weight: bold; font-size: 15px; border: 2px solid #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Pantalla de inicio para desbloqueo de audio en dispositivos móviles -->
+    <div id="start-overlay">
+        <p style="margin-bottom: 20px; text-align: center; padding: 0 20px;">
+            Toca el botón para activar la experiencia de video con audio
+        </p>
+        <button id="start-btn" class="ar-btn">Iniciar Video AR</button>
     </div>
 
-    <a-scene
-      vr-mode-ui="enabled: false;"
-      renderer="logarithmicDepthBuffer: true;"
-      embedded
-      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+    <div class="ar-instruction">Apunta la cámara al marcador para reproducir el video</div>
 
-      <a-assets>
-        <video
-          id="video-ofrenda"
-          src="./assets/video-altar.mp4"
-          preload="auto"
-          loop="true"
-          crossorigin="anonymous"
-          playsinline
-          webkit-playsinline
-          muted>
-        </video>
-      </a-assets>
+    <!-- Botón flotante para regresar al index principal -->
+    <div class="ui-container">
+        <a href="./index.html" class="btn-ar">⬅ Volver al Altar 3D</a>
+    </div>
 
-      <!-- Marcador basado en .patt para el video -->
-      <a-marker control-video type="pattern" url="./assets/nft/marcador.patt">
-        <a-video
-          src="#video-ofrenda"
-          width="2"
-          height="1.125"
-          position="0 0 0"
-          rotation="-90 0 0">
-        </a-video>
-      </a-marker>
+    <a-scene 
+        embedded 
+        renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true;" 
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
 
-      <a-entity camera></a-entity>
+        <a-assets>
+            <video 
+                id="video-altar" 
+                src="./assets/video-altar.mp4" 
+                preload="auto" 
+                loop 
+                crossorigin="anonymous" 
+                webkit-playsinline 
+                playsinline 
+                muted>
+            </video>
+        </a-assets>
+
+        <!-- Luz ambiental -->
+        <a-entity light="type: ambient; intensity: 1"></a-entity>
+
+        <!-- MARCADOR DE PATRÓN PARA EL VIDEO -->
+        <a-marker type="pattern" url="./assets/nft/marcador.patt" videohandler>
+            <!-- Pantalla de video adaptada sobre el marcador físico -->
+            <a-video 
+                src="#video-altar" 
+                width="2" 
+                height="1.125" 
+                position="0 0.1 0" 
+                rotation="-90 0 0">
+            </a-video>
+        </a-marker>
+
+        <a-entity camera></a-entity>
     </a-scene>
-
-    <script>
-      const btnAudio = document.getElementById('btn-audio');
-      const videoEl = document.getElementById('video-ofrenda');
-
-      btnAudio.addEventListener('click', () => {
-        videoEl.muted = !videoEl.muted;
-        videoEl.play();
-        btnAudio.textContent = videoEl.muted ? '🔊 Activar Audio' : '🔇 Silenciar';
-      });
-    </script>
-  </body>
+</body>
 </html>
