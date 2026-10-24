@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./css/style.css" />
 
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
     <script>
       AFRAME.registerComponent('control-video', {
@@ -52,25 +52,16 @@
         </video>
       </a-assets>
 
-      <!-- Nota: Si estás en XAMPP, asegúrate de que 'url' apunte a la ruta raíz correcta -->
-      <a-nft
-        control-video
-        type="nft"
-        url="/altar-muertos/assets/nft/altar-base"
-        smooth="true"
-        smoothCount="10"
-        smoothTolerance="0.01"
-        smoothThreshold="5">
-
+      <!-- Marcador basado en .patt para el video -->
+      <a-marker control-video type="pattern" url="./assets/nft/marcador.patt">
         <a-video
           src="#video-ofrenda"
-          width="160"
-          height="90"
-          position="80 0 -100"
+          width="2"
+          height="1.125"
+          position="0 0 0"
           rotation="-90 0 0">
         </a-video>
-
-      </a-nft>
+      </a-marker>
 
       <a-entity camera></a-entity>
     </a-scene>
